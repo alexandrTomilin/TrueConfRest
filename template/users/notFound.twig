@@ -1,0 +1,52 @@
+{# template/err404.twig #}
+{% extends 'layout.twig' %}
+{% block title %}Slim demo::not found{% endblock %}
+{% block content %}
+<h1>Error!</h1>
+<p>this user not exist in your json file</p>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+    <script>
+        // добавление пользователя
+
+//        var json = {"name" : "1234"};
+//        json = JSON.stringify(json);
+//
+//        $.ajax({
+//            type: 'POST',
+//            url: '/users/create',
+//            data: {"json" : json},
+//            success: function(data){
+//                console.log(data);
+//            }
+//        });
+
+        // удаление пользователя по id
+
+//        var id = 11;
+//
+//        $.ajax({
+//            type: 'DELETE',
+//            url: '/users/remove/' + id,
+//            success: function(data){
+//                console.log(data);
+//            }
+//        });
+
+        var json = {"name" : "Alex"};
+            name = JSON.stringify(json);
+        var
+            id = 11;
+//        console.log(name);
+
+        $.ajax({
+            type: 'POST',
+            data: {"name" : name},
+            url: '/users/update/' + id,
+            success: function(data){
+                console.log(data);
+            }
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,173 @@
+{# template/err404.twig #}
+{% extends 'layout.twig' %}
+{% block title %}{% endblock %}
+{% block content %}
+
+    <style>
+        [readonly="readonly"]
+        {
+            outline: none;
+            background-color: transparent;
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .btn-success
+        {
+            margin: auto;
+            display: table;
+        }
+
+        .modal-body input[type="text"]
+        {
+            display: table;
+            margin: auto;
+            padding: 0 10px;
+        }
+    </style>
+
+    <table class="table table-dark table-hover">
+        <thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col">Имя</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr data-id="{{ user.id }}">
+                <td>{{ user.id }}</td>
+                <td>
+                    <input type="text" value="{{ user.username }}" readonly="readonly"></td>
+                <td>
+                    <button type="button" class="btn btn-danger">Удалить</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#staticBackdrop">Редактировать</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add-user">Добавить</button>
+
+    <script>
+        var body = $('body');
+
+        $(body).on( "click", ".btn-danger", function()
+        {
+            var id = $(this).parents('tr').attr('data-id');
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/users/remove/' + id,
+                success: function(data){
+                    console.log(data);
+                }
+            });
+
+            $(this).parents('tr').remove();
+        });
+
+        $(body).on( "click", ".btn-warning", function()
+        {
+            var id = $(this).parents('tr').attr('data-id');
+
+            $('.edit-user').attr('id', id);
+        });
+
+        $(body).on( "click", ".add-new-user", function()
+        {
+            var
+                value = $('.add-user').val();
+                json = {"name" : value};
+
+            json = JSON.stringify(json);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/create',
+                data: {"json" : json},
+                success: function(data){
+                    console.log(data);
+                }
+            });
+
+            var
+                id = $('[data-id]:last-child').attr('data-id');
+
+                newId = parseInt(id);
+
+                newId++;
+
+            $("tbody").append('<tr data-id="' + newId + '"><td>' + newId + '</td><td><input type="text" value="' + value + '" readonly="readonly"></td> <td> <button type="button" class="btn btn-danger">Удалить</button> </td> <td> <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#staticBackdrop">Редактировать</button> </td> </tr>');
+
+        });
+
+        $(body).on( "click", ".edit-new-user", function()
+        {
+            var
+                value = $('.edit-user').val();
+                json = {"name" : value};
+                name = JSON.stringify(json);
+                id = $('.edit-user').attr('id');
+
+            $("[data-id='" + id + "']").find('input[type="text"]').val(value);
+
+            $.ajax({
+                type: 'POST',
+                data: {"name" : name},
+                url: '/users/update/' + id,
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        });
+
+    </script>
+
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Редактировать имя</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" placeholder="Новое имя" class="edit-user">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary edit-new-user" data-dismiss="modal">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="add-user" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Добавить имя</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" placeholder="Задать имя" class="add-user">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary add-new-user" data-dismiss="modal">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
